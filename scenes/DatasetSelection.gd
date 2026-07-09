@@ -1,8 +1,8 @@
 extends Control
 
-# Data structured as required: 10 words for each of the 2 sets (colors and bodyparts)
-# with English translation, Chinese (Han characters) and Romanised with tones (Pinyin)
-const DATASETS = {
+const SAVE_PATH = "user://custom_datasets.json"
+
+const BUILT_IN_DATASETS = {
 	"colors": {
 		"name": "Colors (颜色)",
 		"words": [
@@ -35,7 +35,8 @@ const DATASETS = {
 	}
 }
 
-var dataset_keys = ["colors", "bodyparts"]
+var all_datasets = {}
+var dataset_keys = []
 
 onready var dataset_list = $VBoxContainer/MainHBox/LeftVBox/DatasetList
 onready var word_tree = $VBoxContainer/MainHBox/RightVBox/WordTree
@@ -58,15 +59,43 @@ func _ready():
 	word_tree.set_column_expand(1, true)
 	word_tree.set_column_expand(2, true)
 
+	# Load all datasets (Built-in + Custom)
+	_load_all_datasets()
+
 	# Populate ItemList
 	dataset_list.clear()
 	for key in dataset_keys:
-		dataset_list.add_item(DATASETS[key]["name"])
+		dataset_list.add_item(all_datasets[key]["name"])
 
 	# Select the first dataset by default
 	if dataset_list.get_item_count() > 0:
 		dataset_list.select(0)
 		_display_dataset(dataset_keys[0])
+
+func _load_all_datasets():
+	all_datasets = {}
+	dataset_keys = []
+
+	# Load built-in first
+	for key in BUILT_IN_DATASETS.keys():
+		all_datasets[key] = BUILT_IN_DATASETS[key].duplicate(true)
+		dataset_keys.append(key)
+
+	# Load custom from user storage
+	var custom_datasets = {}
+	var file = File.new()
+	if file.file_exists(SAVE_PATH):
+		var err = file.open(SAVE_PATH, File.READ)
+		if err == OK:
+			var text = file.get_as_text()
+			file.close()
+			var parse_result = JSON.parse(text)
+			if parse_result.error == OK and typeof(parse_result.result) == TYPE_DICTIONARY:
+				custom_datasets = parse_result.result
+
+	for key in custom_datasets.keys():
+		all_datasets[key] = custom_datasets[key]
+		dataset_keys.append(key)
 
 func _on_DatasetList_item_selected(index):
 	if index >= 0 and index < dataset_keys.size():
@@ -76,7 +105,7 @@ func _display_dataset(key):
 	word_tree.clear()
 	var root = word_tree.create_item()
 
-	var words = DATASETS[key]["words"]
+	var words = all_datasets[key]["words"]
 	for word in words:
 		var item = word_tree.create_item(root)
 		item.set_text(0, word["english"])
