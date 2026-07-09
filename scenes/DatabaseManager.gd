@@ -36,38 +36,38 @@ const BUILT_IN_DATASETS = {
 }
 
 # UI Node References
-onready var db_list = $VBoxContainer/MainHBox/LeftVBox/DatabaseList
-onready var word_tree = $VBoxContainer/MainHBox/RightVBox/WordTree
+@onready var db_list = $VBoxContainer/MainHBox/LeftVBox/DatabaseList
+@onready var word_tree = $VBoxContainer/MainHBox/RightVBox/WordTree
 
 # DB buttons
-onready var new_db_btn = $VBoxContainer/MainHBox/LeftVBox/DbButtonsHBox/NewDbButton
-onready var duplicate_db_btn = $VBoxContainer/MainHBox/LeftVBox/DbButtonsHBox/DuplicateDbButton
-onready var delete_db_btn = $VBoxContainer/MainHBox/LeftVBox/DbButtonsHBox/DeleteDbButton
+@onready var new_db_btn = $VBoxContainer/MainHBox/LeftVBox/DbButtonsHBox/NewDbButton
+@onready var duplicate_db_btn = $VBoxContainer/MainHBox/LeftVBox/DbButtonsHBox/DuplicateDbButton
+@onready var delete_db_btn = $VBoxContainer/MainHBox/LeftVBox/DbButtonsHBox/DeleteDbButton
 
 # Word buttons
-onready var add_word_btn = $VBoxContainer/MainHBox/RightVBox/WordButtonsHBox/AddWordButton
-onready var edit_word_btn = $VBoxContainer/MainHBox/RightVBox/WordButtonsHBox/EditWordButton
-onready var delete_word_btn = $VBoxContainer/MainHBox/RightVBox/WordButtonsHBox/DeleteWordButton
+@onready var add_word_btn = $VBoxContainer/MainHBox/RightVBox/WordButtonsHBox/AddWordButton
+@onready var edit_word_btn = $VBoxContainer/MainHBox/RightVBox/WordButtonsHBox/EditWordButton
+@onready var delete_word_btn = $VBoxContainer/MainHBox/RightVBox/WordButtonsHBox/DeleteWordButton
 
 # Footer
-onready var back_btn = $VBoxContainer/FooterHBox/BackButton
+@onready var back_btn = $VBoxContainer/FooterHBox/BackButton
 
 # Overlays & Inputs
-onready var db_overlay = $DbEditOverlay
-onready var db_overlay_title = $DbEditOverlay/Panel/VBoxContainer/Title
-onready var db_name_input = $DbEditOverlay/Panel/VBoxContainer/NameInput
-onready var db_error_lbl = $DbEditOverlay/Panel/VBoxContainer/ErrorLabel
-onready var db_save_btn = $DbEditOverlay/Panel/VBoxContainer/ButtonsHBox/SaveButton
-onready var db_cancel_btn = $DbEditOverlay/Panel/VBoxContainer/ButtonsHBox/CancelButton
+@onready var db_overlay = $DbEditOverlay
+@onready var db_overlay_title = $DbEditOverlay/Panel/VBoxContainer/Title
+@onready var db_name_input = $DbEditOverlay/Panel/VBoxContainer/NameInput
+@onready var db_error_lbl = $DbEditOverlay/Panel/VBoxContainer/ErrorLabel
+@onready var db_save_btn = $DbEditOverlay/Panel/VBoxContainer/ButtonsHBox/SaveButton
+@onready var db_cancel_btn = $DbEditOverlay/Panel/VBoxContainer/ButtonsHBox/CancelButton
 
-onready var word_overlay = $WordEditOverlay
-onready var word_overlay_title = $WordEditOverlay/Panel/VBoxContainer/Title
-onready var word_eng_input = $WordEditOverlay/Panel/VBoxContainer/EnglishHBox/Input
-onready var word_chi_input = $WordEditOverlay/Panel/VBoxContainer/ChineseHBox/Input
-onready var word_pin_input = $WordEditOverlay/Panel/VBoxContainer/PinyinHBox/Input
-onready var word_error_lbl = $WordEditOverlay/Panel/VBoxContainer/ErrorLabel
-onready var word_save_btn = $WordEditOverlay/Panel/VBoxContainer/ButtonsHBox/SaveButton
-onready var word_cancel_btn = $WordEditOverlay/Panel/VBoxContainer/ButtonsHBox/CancelButton
+@onready var word_overlay = $WordEditOverlay
+@onready var word_overlay_title = $WordEditOverlay/Panel/VBoxContainer/Title
+@onready var word_eng_input = $WordEditOverlay/Panel/VBoxContainer/EnglishHBox/Input
+@onready var word_chi_input = $WordEditOverlay/Panel/VBoxContainer/ChineseHBox/Input
+@onready var word_pin_input = $WordEditOverlay/Panel/VBoxContainer/PinyinHBox/Input
+@onready var word_error_lbl = $WordEditOverlay/Panel/VBoxContainer/ErrorLabel
+@onready var word_save_btn = $WordEditOverlay/Panel/VBoxContainer/ButtonsHBox/SaveButton
+@onready var word_cancel_btn = $WordEditOverlay/Panel/VBoxContainer/ButtonsHBox/CancelButton
 
 # Internal State
 var custom_datasets = {}
@@ -94,24 +94,24 @@ func _ready():
 		_update_ui_for_selection()
 
 func _connect_signals():
-	db_list.connect("item_selected", self, "_on_DatabaseList_item_selected")
+	db_list.item_selected.connect(_on_DatabaseList_item_selected)
 
-	new_db_btn.connect("pressed", self, "_on_NewDbButton_pressed")
-	duplicate_db_btn.connect("pressed", self, "_on_DuplicateDbButton_pressed")
-	delete_db_btn.connect("pressed", self, "_on_DeleteDbButton_pressed")
+	new_db_btn.pressed.connect(_on_NewDbButton_pressed)
+	duplicate_db_btn.pressed.connect(_on_DuplicateDbButton_pressed)
+	delete_db_btn.pressed.connect(_on_DeleteDbButton_pressed)
 
-	add_word_btn.connect("pressed", self, "_on_AddWordButton_pressed")
-	edit_word_btn.connect("pressed", self, "_on_EditWordButton_pressed")
-	delete_word_btn.connect("pressed", self, "_on_DeleteWordButton_pressed")
+	add_word_btn.pressed.connect(_on_AddWordButton_pressed)
+	edit_word_btn.pressed.connect(_on_EditWordButton_pressed)
+	delete_word_btn.pressed.connect(_on_DeleteWordButton_pressed)
 
-	back_btn.connect("pressed", self, "_on_BackButton_pressed")
+	back_btn.pressed.connect(_on_BackButton_pressed)
 
 	# Overlay buttons
-	db_save_btn.connect("pressed", self, "_on_DbSaveButton_pressed")
-	db_cancel_btn.connect("pressed", self, "_on_DbCancelButton_pressed")
+	db_save_btn.pressed.connect(_on_DbSaveButton_pressed)
+	db_cancel_btn.pressed.connect(_on_DbCancelButton_pressed)
 
-	word_save_btn.connect("pressed", self, "_on_WordSaveButton_pressed")
-	word_cancel_btn.connect("pressed", self, "_on_WordCancelButton_pressed")
+	word_save_btn.pressed.connect(_on_WordSaveButton_pressed)
+	word_cancel_btn.pressed.connect(_on_WordCancelButton_pressed)
 
 func _configure_word_tree():
 	word_tree.columns = 3
@@ -125,32 +125,31 @@ func _configure_word_tree():
 	word_tree.set_column_expand(2, true)
 
 func _load_custom_datasets():
-	var file = File.new()
-	if not file.file_exists(SAVE_PATH):
+	if not FileAccess.file_exists(SAVE_PATH):
 		custom_datasets = {}
 		return
 
-	var err = file.open(SAVE_PATH, File.READ)
-	if err != OK:
+	var file = FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if not file:
 		custom_datasets = {}
 		return
 
 	var text = file.get_as_text()
 	file.close()
 
-	var parse_result = JSON.parse(text)
-	if parse_result.error == OK and typeof(parse_result.result) == TYPE_DICTIONARY:
-		custom_datasets = parse_result.result
+	var json = JSON.new()
+	var err = json.parse(text)
+	if err == OK and typeof(json.data) == TYPE_DICTIONARY:
+		custom_datasets = json.data
 	else:
 		custom_datasets = {}
 
 func _save_custom_datasets():
-	var file = File.new()
-	var err = file.open(SAVE_PATH, File.WRITE)
-	if err != OK:
-		print("Error saving custom datasets: ", err)
+	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	if not file:
+		print("Error saving custom datasets")
 		return
-	file.store_string(JSON.print(custom_datasets, "  "))
+	file.store_string(JSON.stringify(custom_datasets, "  "))
 	file.close()
 
 func _merge_all_datasets():
@@ -237,14 +236,14 @@ func _display_selected_words():
 		item.set_text(2, word["pinyin"])
 
 	# Connect tree selection change to update edit/delete buttons
-	if not word_tree.is_connected("item_selected", self, "_on_WordTree_item_selected"):
-		word_tree.connect("item_selected", self, "_on_WordTree_item_selected")
+	if not word_tree.item_selected.is_connected(_on_WordTree_item_selected):
+		word_tree.item_selected.connect(_on_WordTree_item_selected)
 
 func _on_WordTree_item_selected():
 	_update_word_selection_buttons()
 
 func _on_BackButton_pressed():
-	var err = get_tree().change_scene("res://scenes/MainMenu.tscn")
+	var err = get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 	if err != OK:
 		print("Error loading MainMenu: ", err)
 
@@ -288,8 +287,8 @@ func _on_DbSaveButton_pressed():
 			db_error_lbl.text = "A dataset with this name already exists!"
 			return
 
-	# Generate unique ID
-	var new_key = "custom_" + str(OS.get_system_time_msecs())
+	# Generate unique ID in Godot 4 format
+	var new_key = "custom_" + str(Time.get_ticks_msec())
 
 	if db_action_type == "new":
 		custom_datasets[new_key] = {
@@ -361,14 +360,8 @@ func _on_EditWordButton_pressed():
 		return
 
 	# Find index of selected word
-	var idx = 0
-	var current = word_tree.get_root().get_children()
-	while current != null:
-		if current == selected_item:
-			editing_word_index = idx
-			break
-		idx += 1
-		current = current.get_next()
+	var children = word_tree.get_root().get_children()
+	editing_word_index = children.find(selected_item)
 
 	if editing_word_index == -1:
 		return
@@ -413,22 +406,14 @@ func _on_WordSaveButton_pressed():
 	_display_selected_words()
 
 	# Reselect the updated/added word if possible
+	var children = word_tree.get_root().get_children()
 	if editing_word_index != -1:
-		var idx = 0
-		var current = word_tree.get_root().get_children()
-		while current != null:
-			if idx == editing_word_index:
-				current.select(0)
-				break
-			idx += 1
-			current = current.get_next()
+		if editing_word_index < children.size():
+			children[editing_word_index].select(0)
 	else:
 		# Select the newly added last word
-		var current = word_tree.get_root().get_children()
-		while current != null and current.get_next() != null:
-			current = current.get_next()
-		if current != null:
-			current.select(0)
+		if children.size() > 0:
+			children[children.size() - 1].select(0)
 
 	word_overlay.visible = false
 
@@ -441,20 +426,13 @@ func _on_DeleteWordButton_pressed():
 		return
 
 	# Find index of selected word
-	var idx = 0
-	var target_idx = -1
-	var current = word_tree.get_root().get_children()
-	while current != null:
-		if current == selected_item:
-			target_idx = idx
-			break
-		idx += 1
-		current = current.get_next()
+	var children = word_tree.get_root().get_children()
+	var target_idx = children.find(selected_item)
 
 	if target_idx == -1:
 		return
 
-	custom_datasets[selected_key]["words"].remove(target_idx)
+	custom_datasets[selected_key]["words"].remove_at(target_idx)
 	_save_custom_datasets()
 	_merge_all_datasets()
 	_display_selected_words()

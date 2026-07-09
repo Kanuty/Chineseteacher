@@ -3,7 +3,7 @@ extends SceneTree
 const TEST_SAVE_PATH = "user://custom_datasets.json"
 
 func _init():
-	print("--- Running Godot automated validation tests ---")
+	print("--- Running Godot 4 automated validation tests ---")
 	test_main_menu()
 	test_font_fallbacks()
 	test_database_manager()
@@ -16,8 +16,8 @@ func test_main_menu():
 	var main_menu_scene = load("res://scenes/MainMenu.tscn")
 	assert(main_menu_scene != null, "Failed to load MainMenu.tscn")
 
-	var main_menu = main_menu_scene.instance()
-	assert(main_menu != null, "Failed to instance MainMenu")
+	var main_menu = main_menu_scene.instantiate()
+	assert(main_menu != null, "Failed to instantiate MainMenu")
 
 	# Verify child nodes
 	var background = main_menu.get_node_or_null("Background")
@@ -54,18 +54,18 @@ func test_font_fallbacks():
 	print("Testing Font Fallback configuration...")
 	var font = load("res://assets/fonts/ChineseFont.tres")
 	assert(font != null, "Failed to load ChineseFont.tres")
-	assert(font is DynamicFont, "ChineseFont is not a DynamicFont")
+	assert(font is FontVariation, "ChineseFont is not a FontVariation")
 
-	var fallback_count = font.get_fallback_count()
+	var fallback_count = font.fallbacks.size()
 	assert(fallback_count > 0, "ChineseFont does not have fallback fonts configured")
 
-	var fallback_font = font.get_fallback(0)
+	var fallback_font = font.fallbacks[0]
 	assert(fallback_font != null, "Fallback font at index 0 is null")
 
 	var title_font = load("res://assets/fonts/TitleFont.tres")
 	assert(title_font != null, "Failed to load TitleFont.tres")
-	assert(title_font is DynamicFont, "TitleFont is not a DynamicFont")
-	assert(title_font.get_fallback_count() > 0, "TitleFont does not have fallback fonts configured")
+	assert(title_font is FontVariation, "TitleFont is not a FontVariation")
+	assert(title_font.fallbacks.size() > 0, "TitleFont does not have fallback fonts configured")
 
 	print("Font Fallback configuration test passed!")
 
@@ -73,15 +73,14 @@ func test_database_manager():
 	print("Testing DatabaseManager scene and logic...")
 
 	# 1. Clean any existing custom database file for testing
-	var dir = Directory.new()
-	if dir.file_exists(TEST_SAVE_PATH):
-		dir.remove(TEST_SAVE_PATH)
+	if FileAccess.file_exists(TEST_SAVE_PATH):
+		DirAccess.remove_absolute(TEST_SAVE_PATH)
 
 	var dm_scene = load("res://scenes/DatabaseManager.tscn")
 	assert(dm_scene != null, "Failed to load DatabaseManager.tscn")
 
-	var dm = dm_scene.instance()
-	assert(dm != null, "Failed to instance DatabaseManager")
+	var dm = dm_scene.instantiate()
+	assert(dm != null, "Failed to instantiate DatabaseManager")
 
 	# Initialize scene
 	dm._ready()
@@ -109,18 +108,13 @@ func test_database_manager():
 
 	# Verify that the duplicated dataset has 10 words
 	dm._on_DatabaseList_item_selected(2)
-	var root = dm.word_tree.get_root()
-	var child = root.get_children()
-	var words_count = 0
-	while child != null:
-		words_count += 1
-		child = child.get_next()
-	assert(words_count == 10, "Duplicated dataset should have 10 words, got: " + str(words_count))
+	var children = dm.word_tree.get_root().get_children()
+	assert(children.size() == 10, "Duplicated dataset should have 10 words, got: " + str(children.size()))
 
 	# Test Edit Word on Duplicated Dataset
 	# Select the first word in the tree (Red)
-	var first_word_item = root.get_children()
-	assert(first_word_item != null, "First word item should exist")
+	assert(children.size() > 0, "First word item should exist")
+	var first_word_item = children[0]
 	first_word_item.select(0)
 	dm._on_WordTree_item_selected()
 
@@ -138,8 +132,8 @@ func test_database_manager():
 	assert(dm.word_overlay.visible == false, "Word overlay should hide after save")
 
 	# Verify edited word is saved and displayed
-	root = dm.word_tree.get_root()
-	first_word_item = root.get_children()
+	var children_verify = dm.word_tree.get_root().get_children()
+	first_word_item = children_verify[0]
 	assert(first_word_item.get_text(0) == "Crimson", "Edited word English incorrect: " + first_word_item.get_text(0))
 	assert(first_word_item.get_text(1) == "绯红", "Edited word Chinese incorrect: " + first_word_item.get_text(1))
 	assert(first_word_item.get_text(2) == "fēihóng", "Edited word Pinyin incorrect: " + first_word_item.get_text(2))
@@ -156,8 +150,8 @@ func test_database_manager():
 
 	# Word tree should be empty
 	dm._on_DatabaseList_item_selected(3)
-	root = dm.word_tree.get_root()
-	assert(root.get_children() == null, "New DB should be empty of words")
+	var children_empty = dm.word_tree.get_root().get_children()
+	assert(children_empty.size() == 0, "New DB should be empty of words")
 
 	# Add a new word
 	dm._on_AddWordButton_pressed()
@@ -168,12 +162,11 @@ func test_database_manager():
 	dm._on_WordSaveButton_pressed()
 
 	# Word tree should now have 1 word
-	root = dm.word_tree.get_root()
-	child = root.get_children()
-	assert(child != null, "Word tree should have a child")
-	assert(child.get_text(0) == "Apple", "Added word English incorrect")
-	assert(child.get_text(1) == "苹果", "Added word Chinese incorrect")
-	assert(child.get_text(2) == "píngguǒ", "Added word Pinyin incorrect")
+	var children_add = dm.word_tree.get_root().get_children()
+	assert(children_add.size() == 1, "Word tree should have 1 child")
+	assert(children_add[0].get_text(0) == "Apple", "Added word English incorrect")
+	assert(children_add[0].get_text(1) == "苹果", "Added word Chinese incorrect")
+	assert(children_add[0].get_text(2) == "píngguǒ", "Added word Pinyin incorrect")
 
 	# Clean up
 	dm.free()
@@ -185,8 +178,8 @@ func test_dataset_selection_with_custom():
 	var ds_scene = load("res://scenes/DatasetSelection.tscn")
 	assert(ds_scene != null, "Failed to load DatasetSelection.tscn")
 
-	var ds = ds_scene.instance()
-	assert(ds != null, "Failed to instance DatasetSelection")
+	var ds = ds_scene.instantiate()
+	assert(ds != null, "Failed to instantiate DatasetSelection")
 
 	# Initialize scene
 	ds._ready()
@@ -201,19 +194,17 @@ func test_dataset_selection_with_custom():
 
 	# Select My Custom DB
 	ds._on_DatasetList_item_selected(3)
-	var root = ds.word_tree.get_root()
-	var child = root.get_children()
-	assert(child != null, "Custom DB should have words displayed")
-	assert(child.get_text(0) == "Apple", "Custom DB word English incorrect")
-	assert(child.get_text(1) == "苹果", "Custom DB word Chinese incorrect")
-	assert(child.get_text(2) == "píngguǒ", "Custom DB word Pinyin incorrect")
+	var children_selection = ds.word_tree.get_root().get_children()
+	assert(children_selection.size() > 0, "Custom DB should have words displayed")
+	assert(children_selection[0].get_text(0) == "Apple", "Custom DB word English incorrect")
+	assert(children_selection[0].get_text(1) == "苹果", "Custom DB word Chinese incorrect")
+	assert(children_selection[0].get_text(2) == "píngguǒ", "Custom DB word Pinyin incorrect")
 
 	# Clean up
 	ds.free()
 
 	# Clean up test file
-	var dir = Directory.new()
-	if dir.file_exists(TEST_SAVE_PATH):
-		dir.remove(TEST_SAVE_PATH)
+	if FileAccess.file_exists(TEST_SAVE_PATH):
+		DirAccess.remove_absolute(TEST_SAVE_PATH)
 
 	print("DatasetSelection with custom datasets test passed!")

@@ -1,0 +1,10 @@
+# Godot 4 build and import cache
+.godot/
+.import/
+
+# User-specific data
+user/
+
+# Godot downloaded binaries and archives
+Godot_*
+*.zip
