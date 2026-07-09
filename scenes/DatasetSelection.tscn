@@ -1,0 +1,106 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scenes/DatasetSelection.gd" type="Script" id=1]
+[ext_resource path="res://assets/fonts/TitleFont.tres" type="DynamicFont" id=2]
+[ext_resource path="res://assets/fonts/ChineseFont.tres" type="DynamicFont" id=3]
+
+[node name="DatasetSelection" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.14902, 0.14902, 0.180392, 1 )
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 20.0
+margin_top = 20.0
+margin_right = -20.0
+margin_bottom = -20.0
+custom_constants/separation = 20
+
+[node name="HeaderHBox" type="HBoxContainer" parent="VBoxContainer"]
+margin_right = 984.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer/HeaderHBox"]
+margin_right = 984.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/font = ExtResource( 2 )
+text = "Chinese Dataset Selection"
+align = 1
+valign = 1
+
+[node name="MainHBox" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 70.0
+margin_right = 984.0
+margin_bottom = 490.0
+size_flags_vertical = 3
+custom_constants/separation = 20
+
+[node name="LeftVBox" type="VBoxContainer" parent="VBoxContainer/MainHBox"]
+margin_right = 300.0
+margin_bottom = 420.0
+rect_min_size = Vector2( 300, 0 )
+custom_constants/separation = 10
+
+[node name="DatasetLabel" type="Label" parent="VBoxContainer/MainHBox/LeftVBox"]
+margin_right = 300.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+custom_fonts/font = ExtResource( 3 )
+text = "Available Datasets"
+align = 1
+valign = 1
+
+[node name="DatasetList" type="ItemList" parent="VBoxContainer/MainHBox/LeftVBox"]
+margin_top = 40.0
+margin_right = 300.0
+margin_bottom = 420.0
+size_flags_vertical = 3
+custom_fonts/font = ExtResource( 3 )
+
+[node name="RightVBox" type="VBoxContainer" parent="VBoxContainer/MainHBox"]
+margin_left = 320.0
+margin_right = 984.0
+margin_bottom = 420.0
+size_flags_horizontal = 3
+custom_constants/separation = 10
+
+[node name="WordLabel" type="Label" parent="VBoxContainer/MainHBox/RightVBox"]
+margin_right = 664.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+custom_fonts/font = ExtResource( 3 )
+text = "Included Words"
+align = 1
+valign = 1
+
+[node name="WordTree" type="Tree" parent="VBoxContainer/MainHBox/RightVBox"]
+margin_top = 40.0
+margin_right = 664.0
+margin_bottom = 420.0
+size_flags_vertical = 3
+custom_fonts/font = ExtResource( 3 )
+
+[node name="FooterHBox" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 510.0
+margin_right = 984.0
+margin_bottom = 560.0
+rect_min_size = Vector2( 0, 50 )
+alignment = 1
+
+[node name="BackButton" type="Button" parent="VBoxContainer/FooterHBox"]
+margin_left = 392.0
+margin_right = 592.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 200, 50 )
+custom_fonts/font = ExtResource( 3 )
+text = "Back to Menu"
