@@ -38,14 +38,14 @@ const BUILT_IN_DATASETS = {
 var all_datasets = {}
 var dataset_keys = []
 
-onready var dataset_list = $VBoxContainer/MainHBox/LeftVBox/DatasetList
-onready var word_tree = $VBoxContainer/MainHBox/RightVBox/WordTree
-onready var back_button = $VBoxContainer/FooterHBox/BackButton
+@onready var dataset_list = $VBoxContainer/MainHBox/LeftVBox/DatasetList
+@onready var word_tree = $VBoxContainer/MainHBox/RightVBox/WordTree
+@onready var back_button = $VBoxContainer/FooterHBox/BackButton
 
 func _ready():
 	# Connect signals
-	dataset_list.connect("item_selected", self, "_on_DatasetList_item_selected")
-	back_button.connect("pressed", self, "_on_BackButton_pressed")
+	dataset_list.item_selected.connect(_on_DatasetList_item_selected)
+	back_button.pressed.connect(_on_BackButton_pressed)
 
 	# Configure Tree
 	word_tree.columns = 3
@@ -83,15 +83,15 @@ func _load_all_datasets():
 
 	# Load custom from user storage
 	var custom_datasets = {}
-	var file = File.new()
-	if file.file_exists(SAVE_PATH):
-		var err = file.open(SAVE_PATH, File.READ)
-		if err == OK:
+	if FileAccess.file_exists(SAVE_PATH):
+		var file = FileAccess.open(SAVE_PATH, FileAccess.READ)
+		if file:
 			var text = file.get_as_text()
 			file.close()
-			var parse_result = JSON.parse(text)
-			if parse_result.error == OK and typeof(parse_result.result) == TYPE_DICTIONARY:
-				custom_datasets = parse_result.result
+			var json = JSON.new()
+			var err = json.parse(text)
+			if err == OK and typeof(json.data) == TYPE_DICTIONARY:
+				custom_datasets = json.data
 
 	for key in custom_datasets.keys():
 		all_datasets[key] = custom_datasets[key]
@@ -113,6 +113,6 @@ func _display_dataset(key):
 		item.set_text(2, word["pinyin"])
 
 func _on_BackButton_pressed():
-	var err = get_tree().change_scene("res://scenes/MainMenu.tscn")
+	var err = get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 	if err != OK:
 		print("Error loading MainMenu scene: ", err)
