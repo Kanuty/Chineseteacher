@@ -8,6 +8,7 @@ func _init():
 	test_font_fallbacks()
 	test_database_manager()
 	test_dataset_selection_with_custom()
+	test_flashcard_game_loops()
 	print("--- All tests passed successfully! ---")
 	quit(0)
 
@@ -202,9 +203,111 @@ func test_dataset_selection_with_custom():
 
 	# Clean up
 	ds.free()
+	print("DatasetSelection with custom datasets test passed!")
+
+func test_flashcard_game_loops():
+	print("Testing FlashcardGame game loops...")
+
+	# Prepare a mocked active dataset
+	var test_dataset = {
+		"name": "Test Fruits",
+		"words": [
+			{"english": "Apple", "chinese": "苹果", "pinyin": "píngguǒ"},
+			{"english": "Banana", "chinese": "香蕉", "pinyin": "xiāngjiāo"}
+		]
+	}
+
+	var game_scene = load("res://scenes/FlashcardGame.tscn")
+	assert(game_scene != null, "Failed to load FlashcardGame.tscn")
+
+	var game = game_scene.instantiate()
+	assert(game != null, "Failed to instantiate FlashcardGame")
+
+	# Pass test_dataset directly to game state bypass compiler autoload lookup
+	game.dataset = test_dataset
+
+	# Ready
+	game._ready()
+
+	# Verify that mode selection is visible and game panel is hidden
+	assert(game.mode_panel.visible == true, "Mode selection should be visible initially")
+	assert(game.game_panel.visible == false, "Game panel should be hidden initially")
+	assert(game.summary_overlay.visible == false, "Summary overlay should be hidden initially")
+
+	# -----------------
+	# Test Mode 1 Loop
+	# -----------------
+	print("Simulating Mode 1 (Chinese -> English) game loop...")
+	game._on_ModeSelected(1)
+
+	assert(game.game_mode == 1, "Game mode should be 1")
+	assert(game.mode_panel.visible == false, "Mode panel should now be hidden")
+	assert(game.game_panel.visible == true, "Game panel should now be visible")
+	assert(game.stats_hbox.visible == true, "Stats HBox should now be visible")
+
+	# First word: Apple (苹果, píngguǒ)
+	assert(game.prompt_lbl.text == "苹果", "Mode 1 prompt should be Chinese")
+	assert(game.pinyin_prompt_lbl.text == "Pinyin: píngguǒ", "Mode 1 pinyin prompt is incorrect")
+	assert(game.pinyin_prompt_lbl.visible == true, "Pinyin prompt should be visible in Mode 1")
+
+	# Answer empty input test
+	game.answer_input.text = ""
+	game._on_SubmitPressed()
+	assert(game.feedback_lbl.text == "Please enter an answer!", "Empty answer validation failed")
+
+	# Answer correct input (case insensitive)
+	game.answer_input.text = "  aPpLe  "
+	game._on_SubmitPressed()
+
+	assert(game.correct_count == 1, "Correct count should increment")
+	assert(game.incorrect_count == 0, "Incorrect count should remain 0")
+	assert(game.feedback_lbl.text.begins_with("Correct"), "Feedback should indicate success")
+	assert(game.next_btn.visible == true, "Next button should show")
+
+	# Go to next word: Banana (香蕉, xiāngjiāo)
+	game._on_NextPressed()
+	assert(game.current_index == 1, "Index should advance to 1")
+	assert(game.prompt_lbl.text == "香蕉", "Prompt should update to second word")
+
+	# Answer incorrect input
+	game.answer_input.text = "Orange"
+	game._on_SubmitPressed()
+
+	assert(game.correct_count == 1, "Correct count should remain 1")
+	assert(game.incorrect_count == 1, "Incorrect count should increment to 1")
+	assert(game.feedback_lbl.text.begins_with("Incorrect"), "Feedback should indicate incorrect guess")
+
+	# Click finish session
+	game._on_NextPressed()
+	assert(game.game_panel.visible == false, "Game panel should hide on end")
+	assert(game.summary_overlay.visible == true, "Summary overlay should show on end")
+	assert(game.summary_stats_lbl.text.contains("1 out of 2"), "Summary stats text incorrect: " + game.summary_stats_lbl.text)
+
+	# -----------------
+	# Test Mode 2 Loop
+	# -----------------
+	print("Simulating Mode 2 (English -> Chinese) game loop...")
+	game.summary_overlay.visible = false
+	game._on_ModeSelected(2)
+
+	assert(game.game_mode == 2, "Game mode should be 2")
+
+	# First word: Apple (苹果, píngguǒ)
+	assert(game.prompt_lbl.text == "Apple", "Mode 2 prompt should be English")
+	assert(game.pinyin_prompt_lbl.visible == false, "Pinyin prompt should be hidden in Mode 2")
+
+	# Answer correct input (exact Hanzi matching)
+	game.answer_input.text = "苹果"
+	game._on_SubmitPressed()
+
+	assert(game.correct_count == 1, "Correct count should be 1")
+	assert(game.feedback_lbl.text.begins_with("Correct"), "Feedback incorrect")
+
+	# Clean up
+	game.free()
 
 	# Clean up test file
 	if FileAccess.file_exists(TEST_SAVE_PATH):
 		DirAccess.remove_absolute(TEST_SAVE_PATH)
 
-	print("DatasetSelection with custom datasets test passed!")
+	print("FlashcardGame game loops test passed!")

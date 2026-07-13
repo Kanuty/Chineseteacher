@@ -97,7 +97,15 @@ theme_override_font_sizes/font_size = 20
 [node name="FooterHBox" type="HBoxContainer" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_constants/separation = 20
 alignment = 1
+
+[node name="StartGameButton" type="Button" parent="VBoxContainer/FooterHBox"]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3")
+theme_override_font_sizes/font_size = 20
+text = "Start Game"
 
 [node name="BackButton" type="Button" parent="VBoxContainer/FooterHBox"]
 custom_minimum_size = Vector2(200, 50)
