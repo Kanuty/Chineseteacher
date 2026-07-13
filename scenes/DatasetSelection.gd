@@ -37,14 +37,17 @@ const BUILT_IN_DATASETS = {
 
 var all_datasets = {}
 var dataset_keys = []
+var selected_dataset_key = ""
 
 @onready var dataset_list = $VBoxContainer/MainHBox/LeftVBox/DatasetList
 @onready var word_tree = $VBoxContainer/MainHBox/RightVBox/WordTree
+@onready var start_game_button = $VBoxContainer/FooterHBox/StartGameButton
 @onready var back_button = $VBoxContainer/FooterHBox/BackButton
 
 func _ready():
 	# Connect signals
 	dataset_list.item_selected.connect(_on_DatasetList_item_selected)
+	start_game_button.pressed.connect(_on_StartGameButton_pressed)
 	back_button.pressed.connect(_on_BackButton_pressed)
 
 	# Configure Tree
@@ -70,7 +73,9 @@ func _ready():
 	# Select the first dataset by default
 	if dataset_list.get_item_count() > 0:
 		dataset_list.select(0)
-		_display_dataset(dataset_keys[0])
+		_on_DatasetList_item_selected(0)
+	else:
+		start_game_button.disabled = true
 
 func _load_all_datasets():
 	all_datasets = {}
@@ -99,7 +104,23 @@ func _load_all_datasets():
 
 func _on_DatasetList_item_selected(index):
 	if index >= 0 and index < dataset_keys.size():
-		_display_dataset(dataset_keys[index])
+		selected_dataset_key = dataset_keys[index]
+		_display_dataset(selected_dataset_key)
+
+		var ds = all_datasets[selected_dataset_key]
+		var has_words = ds.has("words") and ds["words"].size() > 0
+		start_game_button.disabled = not has_words
+
+		if is_inside_tree():
+			var global_node = get_node_or_null("/root/Global")
+			if global_node:
+				global_node.selected_dataset = ds
+	else:
+		start_game_button.disabled = true
+		if is_inside_tree():
+			var global_node = get_node_or_null("/root/Global")
+			if global_node:
+				global_node.selected_dataset = {}
 
 func _display_dataset(key):
 	word_tree.clear()
@@ -111,6 +132,18 @@ func _display_dataset(key):
 		item.set_text(0, word["english"])
 		item.set_text(1, word["chinese"])
 		item.set_text(2, word["pinyin"])
+
+func _on_StartGameButton_pressed():
+	var ds = null
+	if is_inside_tree():
+		var global_node = get_node_or_null("/root/Global")
+		if global_node:
+			ds = global_node.selected_dataset
+	if ds == null or not ds.has("words") or ds["words"].size() == 0:
+		return
+	var err = get_tree().change_scene_to_file("res://scenes/FlashcardGame.tscn")
+	if err != OK:
+		print("Error loading FlashcardGame scene: ", err)
 
 func _on_BackButton_pressed():
 	var err = get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
