@@ -87,9 +87,10 @@ func test_database_manager():
 	dm._ready()
 
 	# Verify default database list contains built-in ones
-	assert(dm.db_list.get_item_count() == 2, "Default database list should have 2 built-in items")
+	assert(dm.db_list.get_item_count() == 3, "Default database list should have 3 built-in items")
 	assert(dm.db_list.get_item_text(0) == "Colors (颜色) (Built-in)", "First item name incorrect")
 	assert(dm.db_list.get_item_text(1) == "Body Parts (身体部位) (Built-in)", "Second item name incorrect")
+	assert(dm.db_list.get_item_text(2) == "Modal Words (情态词) (Built-in)", "Third item name incorrect")
 
 	# Test duplication of built-in Colors
 	dm._on_DatabaseList_item_selected(0) # Select Colors
@@ -103,12 +104,12 @@ func test_database_manager():
 	dm._on_DbSaveButton_pressed()
 	assert(dm.db_overlay.visible == false, "Overlay should hide after save")
 
-	# Database count should now be 3 (2 built-in + 1 custom)
-	assert(dm.db_list.get_item_count() == 3, "Db list should now have 3 items")
-	assert(dm.db_list.get_item_text(2) == "Colors (颜色) Copy", "Duplicated dataset name incorrect: " + dm.db_list.get_item_text(2))
+	# Database count should now be 4 (3 built-in + 1 custom)
+	assert(dm.db_list.get_item_count() == 4, "Db list should now have 4 items")
+	assert(dm.db_list.get_item_text(3) == "Colors (颜色) Copy", "Duplicated dataset name incorrect: " + dm.db_list.get_item_text(3))
 
 	# Verify that the duplicated dataset has 10 words
-	dm._on_DatabaseList_item_selected(2)
+	dm._on_DatabaseList_item_selected(3)
 	var children = dm.word_tree.get_root().get_children()
 	assert(children.size() == 10, "Duplicated dataset should have 10 words, got: " + str(children.size()))
 
@@ -146,11 +147,11 @@ func test_database_manager():
 	dm._on_DbSaveButton_pressed()
 
 	# Selected DB should now be the new one
-	assert(dm.db_list.get_item_count() == 4, "DB count should be 4 now")
-	assert(dm.db_list.get_item_text(3) == "My Custom DB", "New DB name incorrect")
+	assert(dm.db_list.get_item_count() == 5, "DB count should be 5 now")
+	assert(dm.db_list.get_item_text(4) == "My Custom DB", "New DB name incorrect")
 
 	# Word tree should be empty
-	dm._on_DatabaseList_item_selected(3)
+	dm._on_DatabaseList_item_selected(4)
 	var children_empty = dm.word_tree.get_root().get_children()
 	assert(children_empty.size() == 0, "New DB should be empty of words")
 
@@ -187,14 +188,15 @@ func test_dataset_selection_with_custom():
 
 	# Verification: Since we created custom datasets in test_database_manager, they should be loaded!
 	# We added "Colors (颜色) Copy" and "My Custom DB"
-	assert(ds.dataset_list.get_item_count() == 4, "Dataset list should load custom items too! Expected 4, got " + str(ds.dataset_list.get_item_count()))
+	assert(ds.dataset_list.get_item_count() == 5, "Dataset list should load custom items too! Expected 5, got " + str(ds.dataset_list.get_item_count()))
 	assert(ds.dataset_list.get_item_text(0) == "Colors (颜色)", "Built-in Colors name incorrect")
 	assert(ds.dataset_list.get_item_text(1) == "Body Parts (身体部位)", "Built-in Body parts name incorrect")
-	assert(ds.dataset_list.get_item_text(2) == "Colors (颜色) Copy", "Custom Colors Copy name incorrect")
-	assert(ds.dataset_list.get_item_text(3) == "My Custom DB", "My Custom DB name incorrect")
+	assert(ds.dataset_list.get_item_text(2) == "Modal Words (情态词)", "Built-in Modal Words name incorrect")
+	assert(ds.dataset_list.get_item_text(3) == "Colors (颜色) Copy", "Custom Colors Copy name incorrect")
+	assert(ds.dataset_list.get_item_text(4) == "My Custom DB", "My Custom DB name incorrect")
 
 	# Select My Custom DB
-	ds._on_DatasetList_item_selected(3)
+	ds._on_DatasetList_item_selected(4)
 	var children_selection = ds.word_tree.get_root().get_children()
 	assert(children_selection.size() > 0, "Custom DB should have words displayed")
 	assert(children_selection[0].get_text(0) == "Apple", "Custom DB word English incorrect")

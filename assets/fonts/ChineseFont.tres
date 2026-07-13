@@ -1,7 +1,7 @@
 [gd_resource type="FontVariation" load_steps=3 format=3]
 
-[ext_resource type="FontFile" path="res://assets/fonts/wqy-microhei.ttf" id="1"]
-[ext_resource type="FontFile" path="res://assets/fonts/LiberationSans-Regular.ttf" id="2"]
+[ext_resource type="FontFile" path="res://assets/fonts/LiberationSans-Regular.ttf" id="1"]
+[ext_resource type="FontFile" path="res://assets/fonts/wqy-microhei.ttf" id="2"]
 
 [resource]
 base_font = ExtResource("1")
