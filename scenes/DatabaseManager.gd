@@ -32,6 +32,21 @@ const BUILT_IN_DATASETS = {
 			{"english": "Arm", "chinese": "手臂", "pinyin": "shǒu bì"},
 			{"english": "Face", "chinese": "脸", "pinyin": "liǎn"}
 		]
+	},
+	"modal_words": {
+		"name": "Modal Words (情态词)",
+		"words": [
+			{"english": "Want / would like", "chinese": "想", "pinyin": "xiǎng"},
+			{"english": "Want / must", "chinese": "要", "pinyin": "yào"},
+			{"english": "Can / be able to", "chinese": "会", "pinyin": "huì"},
+			{"english": "Can / may", "chinese": "能", "pinyin": "néng"},
+			{"english": "Can / may (permission)", "chinese": "可以", "pinyin": "kě yǐ"},
+			{"english": "Should / ought to", "chinese": "应该", "pinyin": "yīng gāi"},
+			{"english": "Must / have to", "chinese": "必须", "pinyin": "bì xū"},
+			{"english": "Like", "chinese": "喜欢", "pinyin": "xǐ huan"},
+			{"english": "Hope / wish", "chinese": "希望", "pinyin": "xī wàng"},
+			{"english": "Dare to", "chinese": "敢", "pinyin": "gǎn"}
+		]
 	}
 }
 

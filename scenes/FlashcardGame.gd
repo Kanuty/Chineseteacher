@@ -69,6 +69,10 @@ func _on_ModeSelected(mode: int):
 	correct_count = 0
 	incorrect_count = 0
 
+	# Duplicate and shuffle words list on each new game start
+	words = dataset["words"].duplicate(true)
+	words.shuffle()
+
 	mode_panel.visible = false
 	game_panel.visible = true
 	stats_hbox.visible = true
